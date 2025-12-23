@@ -9,15 +9,15 @@
   
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="OCI Agentic FOIA Architecture - Oracle Database 26ai" />
+  <meta property="og:title" content="Leveraging Generative AI to Enhance Information Request Management in Electronic Records" />
   <meta property="og:description" content="Intelligent FOIA request processing solution leveraging Oracle Database 26ai's converged architecture for automated document processing, intelligent retrieval, and compliance workflows." />
   
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="OCI Agentic FOIA Architecture" />
+  <meta name="twitter:title" content="Leveraging Generative AI to Enhance Information Request Management in Electronic Records" />
   <meta name="twitter:description" content="AI-powered FOIA processing with Oracle Database 26ai" />
   
-  <title>OCI Agentic FOIA Architecture (26ai Edition - Professional)</title>
+  <title>Leveraging Generative AI to Enhance Information Request Management in Electronic Records</title>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -117,6 +117,10 @@
       border-radius: 12px;
       background: transparent;
       min-width: 0;
+      height: 1px;
+      width: 100%;
+      opacity: 0;
+      pointer-events: none;
     }
 
     #svg-layer{
@@ -125,18 +129,51 @@
       width: 100%;
       height: 100%;
       pointer-events:none;
-      z-index: 60;
+      z-index: 20;
       overflow: visible;
     }
 
+    #canvas{
+      overflow: visible;
+    }
+
+    /* Visual anchor points for connections (hidden logic, visible UI) */
+    .anchor-point {
+      width: 12px;
+      height: 12px;
+      background: white;
+      border: 2px solid #64748b;
+      border-radius: 50%;
+      position: absolute;
+      z-index: 40;
+      transition: transform 0.2s;
+    }
+    .anchor-point:hover { transform: scale(1.2); }
+    
+    /* Anchor positions */
+    .anchor-right { right: -6px; top: 50%; transform: translateY(-50%); }
+    .anchor-left { left: -6px; top: 50%; transform: translateY(-50%); }
+    .anchor-bottom { bottom: -6px; left: 50%; transform: translateX(-50%); }
+    .anchor-top { top: -6px; left: 50%; transform: translateX(-50%); }
+
     /* DB port styling */
+    .port-strip-top{
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .port-strip-bottom{
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #e2e8f0;
+    }
     .port-strip{
-      margin-top: 24px;
-      padding-top: 20px;
+      margin-top: 16px;
+      padding-top: 16px;
       border-top: 1px solid #e2e8f0;
       display: grid;
       grid-template-columns: 1fr;
-      gap: 14px;
+      gap: 12px;
     }
     .port{
       display: flex;
@@ -146,7 +183,7 @@
       border: 1px solid #e2e8f0;
       background: #f8fafc;
       border-radius: 10px;
-      padding: 14px 16px;
+      padding: 12px 14px;
       position: relative;
       transition: background-color 0.2s ease, border-color 0.2s ease;
     }
@@ -192,6 +229,21 @@
       background: #ffffff;
       flex: 0 0 auto;
     }
+    .port-top .port-pin{
+      position: absolute;
+      top: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .port-bottom .port-pin{
+      position: absolute;
+      bottom: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .port-top, .port-bottom{
+      position: relative;
+    }
 
     @media print{
       body{ background:white; margin:0; }
@@ -211,7 +263,7 @@
           <i class="fa-solid fa-layer-group"></i>
         </div>
         <div>
-          <h1 class="text-2xl font-bold text-slate-900 tracking-tight">OCI Agentic FOIA Architecture</h1>
+          <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Leveraging Generative AI to Enhance Information Request Management in Electronic Records</h1>
           <p class="text-slate-600 text-sm mt-1">Oracle Database 26ai Converged Architecture</p>
         </div>
       </div>
@@ -222,7 +274,7 @@
       <h2 class="text-xl font-semibold text-slate-900 mb-4">Overview</h2>
       <div class="prose prose-slate max-w-none">
         <p class="text-slate-700 leading-relaxed mb-4">
-          The <strong>OCI Agentic FOIA Architecture</strong> is an intelligent, end-to-end solution designed to automate and streamline Freedom of Information Act (FOIA) request processing. Built on Oracle Cloud Infrastructure's latest AI capabilities, this system leverages Oracle Database 26ai's converged architecture to provide unprecedented efficiency in document ingestion, intelligent retrieval, automated redaction, and compliance workflows.
+          This system leverages <strong>Generative AI to enhance information request management in electronic records</strong>, providing an intelligent, end-to-end solution designed to automate and streamline Freedom of Information Act (FOIA) request processing. Built on Oracle Cloud Infrastructure's latest AI capabilities, this system leverages Oracle Database 26ai's converged architecture to provide unprecedented efficiency in document ingestion, intelligent retrieval, automated redaction, and compliance workflows.
         </p>
         <p class="text-slate-700 leading-relaxed mb-6">
           <strong>How It Works:</strong> The system continuously collects unstructured data from fragmented sources (emails, repositories, file shares) at scheduled intervals, processes and indexes it proactively in Oracle Database 26ai. When a user submits a query, the system searches through this pre-indexed data using hybrid retrieval (vector + graph + keyword search), eliminating the need to process documents at query time.
@@ -289,195 +341,238 @@
     <!-- MAIN DIAGRAM AREA -->
     <section class="mb-16">
       <h2 class="text-xl font-semibold text-slate-900 mb-6">Architecture Diagram</h2>
-      <div class="relative min-h-[1300px] bg-white rounded-lg border border-slate-200 p-6" id="canvas">
+      <div class="relative min-h-[1000px] bg-white rounded-lg border border-slate-200 p-6" id="canvas">
       <svg id="svg-layer" aria-hidden="true">
         <defs>
           <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-            <path d="M0,0 L0,6 L9,3 z" fill="var(--line)"></path>
+            <path d="M0,0 L0,6 L9,3 z" fill="#64748b"></path>
           </marker>
           <marker id="arrowLight" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-            <path d="M0,0 L0,6 L9,3 z" fill="var(--lineLight)"></path>
+            <path d="M0,0 L0,6 L9,3 z" fill="#94a3b8"></path>
           </marker>
         </defs>
       </svg>
 
-      <div class="grid grid-cols-12 gap-10 h-full items-stretch">
+      <div class="flex flex-col gap-16 h-full">
 
-        <!-- ZONE 1 -->
-        <div class="col-span-3 flex flex-col h-full">
-          <div class="zone px-8 py-12 flex flex-col min-h-[1250px]">
+        <!-- ZONE 1 - ROW 1 -->
+        <div class="flex flex-col">
+          <div class="zone px-8 py-8 bg-slate-50/50 border-slate-200">
             <div class="zone-label">Step 1: Continuous Data Ingestion Pipeline</div>
-
-            <div class="flex-1 flex flex-col justify-center gap-14">
-              <div id="box-sources" class="node p-6 border-l-4 border-slate-400 shadow-sm">
-                <div class="flex justify-between items-start mb-3">
-                  <span class="text-xs font-bold text-slate-400 uppercase">Input</span>
-                  <i class="fa-solid fa-file-import text-slate-400"></i>
+            <div class="flex justify-center items-center py-8">
+              <div class="flex flex-row justify-center items-stretch gap-6 w-full max-w-5xl">
+                <div id="box-sources" class="node p-6 border-l-4 border-slate-400 shadow-sm flex-1 min-w-0 max-w-xs">
+                  <div class="anchor-point anchor-right"></div>
+                  <div class="flex justify-between items-start mb-3">
+                    <span class="text-xs font-bold text-slate-400 uppercase">Input</span>
+                    <i class="fa-solid fa-file-import text-slate-400 flex-shrink-0"></i>
+                  </div>
+                  <h3 class="font-bold text-slate-800 text-base leading-tight mb-2">Unstructured Data Sources</h3>
+                  <p class="text-xs text-slate-500 leading-relaxed">Emails (PST), Repositories, PDFs, Images<br><span class="text-[10px] italic">Collected continuously/scheduled</span></p>
                 </div>
-                <h3 class="font-bold text-slate-800 text-lg">Unstructured Data Sources</h3>
-                <p class="text-xs text-slate-500 mt-2">Emails (PST), Repositories, PDFs, Images<br><span class="text-[10px] italic">Collected continuously/scheduled</span></p>
-              </div>
 
-              <div id="box-obj" class="node p-6 border-l-4 border-oracle-red shadow-sm">
-                <div class="flex justify-between items-start mb-3">
-                  <span class="text-xs font-bold text-oracle-red uppercase">Storage</span>
-                  <i class="fa-solid fa-bucket text-oracle-red"></i>
+                <div id="box-obj" class="node p-6 border-l-4 border-oracle-red shadow-sm flex-1 min-w-0 max-w-xs">
+                  <div class="anchor-point anchor-left"></div>
+                  <div class="anchor-point anchor-right"></div>
+                  <div class="flex justify-between items-start mb-3">
+                    <span class="text-xs font-bold text-oracle-red uppercase">Storage</span>
+                    <i class="fa-solid fa-bucket text-oracle-red flex-shrink-0"></i>
+                  </div>
+                  <h3 class="font-bold text-slate-800 text-base leading-tight mb-2">Object Storage</h3>
+                  <p class="text-xs text-slate-500 leading-relaxed">Raw Bucket (Immutable)</p>
                 </div>
-                <h3 class="font-bold text-slate-800 text-lg">Object Storage</h3>
-                <p class="text-xs text-slate-500 mt-2">Raw Bucket (Immutable)</p>
-              </div>
 
-              <div id="box-ocr" class="node p-6 border-l-4 border-oci-teal bg-cyan-50/50 shadow-sm">
-                <div class="flex justify-between items-start mb-3">
-                  <span class="text-xs font-bold text-oci-teal uppercase">AI Service</span>
-                  <i class="fa-solid fa-eye text-oci-teal"></i>
+                <div id="box-ocr" class="node p-6 border-l-4 border-oci-teal bg-cyan-50/50 shadow-sm flex-1 min-w-0 max-w-xs">
+                  <div class="anchor-point anchor-left"></div>
+                  <div class="anchor-point anchor-bottom"></div>
+                  <div class="flex justify-between items-start mb-3">
+                    <span class="text-xs font-bold text-oci-teal uppercase">AI Service</span>
+                    <i class="fa-solid fa-eye text-oci-teal flex-shrink-0"></i>
+                  </div>
+                  <h3 class="font-bold text-slate-800 text-base leading-tight mb-2">Doc Understanding</h3>
+                  <p class="text-xs text-slate-500 leading-relaxed">OCR & Key-Value Extraction</p>
                 </div>
-                <h3 class="font-bold text-slate-800 text-lg">Doc Understanding</h3>
-                <p class="text-xs text-slate-500 mt-2">OCR & Key-Value Extraction</p>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- RAIL 1 -->
-        <div id="rail-12" class="rail col-span-1"></div>
+        <!-- RAIL 1-2: Between Zone 1 and Zone 2 -->
+        <div id="rail-12" class="rail"></div>
 
-        <!-- ZONE 2 -->
-        <div class="col-span-4 flex flex-col justify-center">
-          <div class="zone p-10 flex flex-col justify-center bg-orange-50/20 border-orange-200 min-h-[1250px]">
+        <!-- ZONE 2 - ROW 2 -->
+        <div class="flex flex-col">
+          <div class="zone p-6 bg-orange-50/20 border-orange-200">
             <div class="zone-label text-oracle-red border-orange-200">Step 2: Unified Memory</div>
 
-            <div id="box-db" class="node w-full p-10 shadow-xl border-2 border-oracle-red bg-white relative my-12">
+            <div id="box-db" class="node w-full p-8 shadow-xl border-2 border-oracle-red bg-white relative my-4">
+              <div class="anchor-point anchor-top"></div>
+              <div class="anchor-point anchor-bottom"></div>
+              <div class="anchor-point anchor-right"></div>
               <div class="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-oracle-red text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-md z-10">
                 Oracle Database 26ai
               </div>
 
-              <div class="text-center mb-8 mt-4">
-                <i class="fa-solid fa-database text-5xl text-oracle-red mb-4"></i>
-                <h2 class="text-2xl font-extrabold text-slate-900">Converged Store</h2>
-                <p class="text-xs text-slate-500 uppercase tracking-widest font-semibold mt-2">The Single Source of Truth</p>
-              </div>
-
-              <div class="grid grid-cols-2 gap-5 mb-6">
-                <div class="bg-slate-50 p-4 rounded border border-slate-200 text-center">
-                  <i class="fa-solid fa-vector-square text-oci-teal mb-2 block text-lg"></i>
-                  <span class="text-xs font-bold text-slate-700">AI Vector Search</span>
-                  <div class="text-[9px] text-slate-500 leading-tight mt-1.5">Semantic Chunks</div>
-                </div>
-                <div class="bg-slate-50 p-4 rounded border border-slate-200 text-center">
-                  <i class="fa-solid fa-share-nodes text-orange-500 mb-2 block text-lg"></i>
-                  <span class="text-xs font-bold text-slate-700">Property Graph</span>
-                  <div class="text-[9px] text-slate-500 leading-tight mt-1.5">Relationships</div>
-                </div>
-                <div class="bg-slate-50 p-4 rounded border border-slate-200 text-center">
-                  <i class="fa-solid fa-table text-blue-500 mb-2 block text-lg"></i>
-                  <span class="text-xs font-bold text-slate-700">Relational</span>
-                  <div class="text-[9px] text-slate-500 leading-tight mt-1.5">SQL Metadata</div>
-                </div>
-                <div class="bg-slate-50 p-4 rounded border border-slate-200 text-center">
-                  <i class="fa-solid fa-file-code text-purple-500 mb-2 block text-lg"></i>
-                  <span class="text-xs font-bold text-slate-700">JSON Duality</span>
-                  <div class="text-[9px] text-slate-500 leading-tight mt-1.5">Doc Access</div>
+              <!-- TOP PORTS (Ingestion) -->
+              <div class="port-strip-top mb-4 pb-4 border-b border-slate-200">
+                <div class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-3 text-center">DB Interfaces - Input</div>
+                <div class="flex justify-center gap-4">
+                  <div class="port port-top" id="port-ingest">
+                    <div class="lhs">
+                      <i class="fa-solid fa-arrow-down text-slate-600"></i>
+                      <div>
+                        <div class="tag">Ingestion</div>
+                        <div class="name">Upsert Chunks + Metadata</div>
+                        <div class="hint">from Doc Understanding</div>
+                      </div>
+                    </div>
+                    <div class="port-pin" title="connector target"></div>
+                  </div>
                 </div>
               </div>
 
-              <!-- EXPLICIT PORTS (WHERE ARROWS LAND) -->
-              <div class="port-strip">
-                <div class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-3">DB Interfaces</div>
+              <div class="text-center mb-4">
+                <i class="fa-solid fa-database text-4xl text-oracle-red mb-3"></i>
+                <h2 class="text-xl font-extrabold text-slate-900">Converged Store</h2>
+                <p class="text-xs text-slate-500 uppercase tracking-widest font-semibold mt-1.5">The Single Source of Truth</p>
+              </div>
 
-                <div class="port" id="port-ingest">
-                  <div class="lhs">
-                    <i class="fa-solid fa-arrow-right-to-bracket text-slate-600"></i>
-                    <div>
-                      <div class="tag">Ingestion</div>
-                      <div class="name">Upsert Chunks + Metadata</div>
-                      <div class="hint">from Doc Understanding</div>
-                    </div>
-                  </div>
-                  <div class="port-pin" title="connector target"></div>
+              <div class="grid grid-cols-4 gap-3 mb-4">
+                <div class="bg-slate-50 p-3 rounded border border-slate-200 text-center">
+                  <i class="fa-solid fa-vector-square text-oci-teal mb-2 block text-base"></i>
+                  <span class="text-[11px] font-bold text-slate-700 block">AI Vector Search</span>
+                  <div class="text-[9px] text-slate-500 leading-tight mt-1">Semantic Chunks</div>
                 </div>
-
-                <div class="port" id="port-vector">
-                  <div class="lhs">
-                    <i class="fa-solid fa-cubes text-oci-teal"></i>
-                    <div>
-                      <div class="tag">Vector</div>
-                      <div class="name">Semantic Retrieve (Top-k)</div>
-                      <div class="hint">embeddings + similarity</div>
-                    </div>
-                  </div>
-                  <div class="port-pin" title="connector target"></div>
+                <div class="bg-slate-50 p-3 rounded border border-slate-200 text-center">
+                  <i class="fa-solid fa-share-nodes text-orange-500 mb-2 block text-base"></i>
+                  <span class="text-[11px] font-bold text-slate-700 block">Property Graph</span>
+                  <div class="text-[9px] text-slate-500 leading-tight mt-1">Relationships</div>
                 </div>
-
-                <div class="port" id="port-graph">
-                  <div class="lhs">
-                    <i class="fa-solid fa-project-diagram text-orange-500"></i>
-                    <div>
-                      <div class="tag">Graph</div>
-                      <div class="name">GraphRAG Context</div>
-                      <div class="hint">entities + relations</div>
-                    </div>
-                  </div>
-                  <div class="port-pin" title="connector target"></div>
+                <div class="bg-slate-50 p-3 rounded border border-slate-200 text-center">
+                  <i class="fa-solid fa-table text-blue-500 mb-2 block text-base"></i>
+                  <span class="text-[11px] font-bold text-slate-700 block">Relational</span>
+                  <div class="text-[9px] text-slate-500 leading-tight mt-1">SQL Metadata</div>
                 </div>
-
-                <div class="port" id="port-sql">
-                  <div class="lhs">
-                    <i class="fa-solid fa-database text-blue-600"></i>
-                    <div>
-                      <div class="tag">SQL</div>
-                      <div class="name">Case Records + Audit</div>
-                      <div class="hint">decisions, logs, SLAs</div>
-                    </div>
-                  </div>
-                  <div class="port-pin" title="connector target"></div>
+                <div class="bg-slate-50 p-3 rounded border border-slate-200 text-center">
+                  <i class="fa-solid fa-file-code text-purple-500 mb-2 block text-base"></i>
+                  <span class="text-[11px] font-bold text-slate-700 block">JSON Duality</span>
+                  <div class="text-[9px] text-slate-500 leading-tight mt-1">Doc Access</div>
                 </div>
               </div>
-              <!-- /PORTS -->
+
+              <!-- BOTTOM PORTS (Vector, Graph, SQL) -->
+              <div class="port-strip-bottom mt-4 pt-4 border-t border-slate-200">
+                <div class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-3 text-center">DB Interfaces - Output</div>
+                <div class="flex justify-center gap-4 flex-wrap">
+                  <div class="port port-bottom" id="port-vector">
+                    <div class="lhs">
+                      <i class="fa-solid fa-cubes text-oci-teal"></i>
+                      <div>
+                        <div class="tag">Vector</div>
+                        <div class="name">Semantic Retrieve (Top-k)</div>
+                        <div class="hint">embeddings + similarity</div>
+                      </div>
+                    </div>
+                    <div class="port-pin" title="connector target"></div>
+                  </div>
+
+                  <div class="port port-bottom" id="port-graph">
+                    <div class="lhs">
+                      <i class="fa-solid fa-project-diagram text-orange-500"></i>
+                      <div>
+                        <div class="tag">Graph</div>
+                        <div class="name">GraphRAG Context</div>
+                        <div class="hint">entities + relations</div>
+                      </div>
+                    </div>
+                    <div class="port-pin" title="connector target"></div>
+                  </div>
+
+                  <div class="port port-bottom" id="port-keyword">
+                    <div class="lhs">
+                      <i class="fa-solid fa-magnifying-glass text-green-600"></i>
+                      <div>
+                        <div class="tag">Keyword</div>
+                        <div class="name">Keyword Search</div>
+                        <div class="hint">exact term matching</div>
+                      </div>
+                    </div>
+                    <div class="port-pin" title="connector target"></div>
+                  </div>
+
+                  <div class="port port-bottom" id="port-sql">
+                    <div class="lhs">
+                      <i class="fa-solid fa-database text-blue-600"></i>
+                      <div>
+                        <div class="tag">SQL</div>
+                        <div class="name">Case Records + Audit</div>
+                        <div class="hint">decisions, logs, SLAs</div>
+                      </div>
+                    </div>
+                    <div class="port-pin" title="connector target"></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- RAIL 2 -->
-        <div id="rail-23" class="rail col-span-1 min-w-[60px]"></div>
+        <!-- RAIL 2-3: Between Zone 2 and Zone 3 -->
+        <div id="rail-23" class="rail"></div>
 
-        <!-- ZONE 3 -->
-        <div class="col-span-3 flex flex-col h-full">
-          <div class="zone px-8 py-12 flex flex-col min-h-[1250px]">
+        <!-- ZONE 3 - ROW 3 -->
+        <div class="flex flex-col">
+          <div class="zone px-8 py-8 bg-slate-50/50 border-slate-200">
             <div class="zone-label text-oci-teal border-cyan-200">Step 3: Reasoning & Action</div>
+            <div class="flex flex-col justify-center items-center py-10 gap-12">
+              <!-- Top Row: GenAI Agent and OCI Functions side-by-side -->
+              <div class="flex flex-row justify-center items-stretch gap-10 w-full max-w-5xl">
+                <div id="box-agent" class="node p-8 border-l-4 border-oci-teal bg-cyan-50/50 shadow-sm flex-1 min-w-[300px] max-w-md">
+                  <div class="anchor-point anchor-top"></div>
+                  <div class="anchor-point anchor-right"></div>
+                  <div class="flex justify-between items-start mb-4">
+                    <span class="text-xs font-bold text-oci-teal uppercase">Orchestration</span>
+                    <i class="fa-solid fa-brain text-oci-teal flex-shrink-0"></i>
+                  </div>
+                  <h3 class="font-bold text-slate-800 text-lg leading-tight mb-3">GenAI Agent</h3>
+                  <p class="text-sm text-slate-500 leading-relaxed">Plan → Retrieve → Redact → Package</p>
+                </div>
 
-            <div class="flex-1 flex flex-col justify-center gap-14">
-              <div id="box-agent" class="node p-6 border-l-4 border-oci-teal bg-cyan-50/50 shadow-sm">
-                <div class="flex justify-between items-start mb-3">
-                <span class="text-xs font-bold text-oci-teal uppercase">Orchestration</span>
-                <i class="fa-solid fa-brain text-oci-teal"></i>
+                <div id="box-func" class="node p-8 border-l-4 border-slate-600 shadow-sm flex-1 min-w-[300px] max-w-md">
+                  <div class="anchor-point anchor-left"></div>
+                  <div class="anchor-point anchor-right"></div>
+                  <div class="flex justify-between items-start mb-4">
+                    <span class="text-xs font-bold text-slate-600 uppercase">Execution</span>
+                    <i class="fa-solid fa-cogs text-slate-600 flex-shrink-0"></i>
+                  </div>
+                  <h3 class="font-bold text-slate-800 text-lg leading-tight mb-3">OCI Functions</h3>
+                  <p class="text-sm text-slate-500 leading-relaxed">Redaction & PDF Generation</p>
+                </div>
               </div>
-              <h3 class="font-bold text-slate-800 text-lg">GenAI Agent</h3>
-                <p class="text-xs text-slate-500 mt-2">Plan → Retrieve → Redact → Package</p>
-            </div>
 
-              <div id="box-func" class="node p-6 border-l-4 border-slate-600 shadow-sm">
-                <div class="flex justify-between items-start mb-3">
-                <span class="text-xs font-bold text-slate-600 uppercase">Execution</span>
-                <i class="fa-solid fa-cogs text-slate-600"></i>
-              </div>
-              <h3 class="font-bold text-slate-800 text-lg">OCI Functions</h3>
-                <p class="text-xs text-slate-500 mt-2">Redaction & PDF Generation</p>
-            </div>
-
-              <div id="box-ui" class="node p-6 border-l-4 border-oci-green bg-green-50/50 shadow-sm">
-                <div class="flex justify-between items-start mb-3">
-                <span class="text-xs font-bold text-oci-green uppercase">Interface</span>
-                <i class="fa-solid fa-desktop text-oci-green"></i>
-              </div>
-              <h3 class="font-bold text-slate-800 text-lg">Oracle APEX</h3>
-                <p class="text-xs text-slate-500 mt-2">Human Review & Release</p>
+              <!-- Bottom Row: Oracle APEX centered directly below Functions for proper vertical alignment -->
+              <div class="flex justify-end items-center w-full max-w-5xl mx-auto">
+                <div class="flex-1"></div>
+                <div id="box-ui" class="node p-8 border-l-4 border-oci-green bg-green-50/50 shadow-sm min-w-[300px] max-w-md">
+                  <div class="anchor-point anchor-left"></div>
+                  <div class="anchor-point anchor-right"></div>
+                  <div class="flex justify-between items-start mb-4">
+                    <span class="text-xs font-bold text-oci-green uppercase">Interface</span>
+                    <i class="fa-solid fa-desktop text-oci-green flex-shrink-0"></i>
+                  </div>
+                  <h3 class="font-bold text-slate-800 text-lg leading-tight mb-3">Oracle APEX</h3>
+                  <p class="text-sm text-slate-500 leading-relaxed">Human Review & Release</p>
+                </div>
+                <div class="flex-1"></div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Grid layout: Zone1 (3) + Rail1 (1) + Zone2 (4) + Rail2 (1) + Zone3 (3) = 12 columns -->
+        <!-- RAIL 3-FEEDBACK: For feedback loop routing -->
+        <div id="rail-feedback" class="rail"></div>
+
+        <!-- Grid layout: 3 rows (Step 1 top, Step 2 middle, Step 3 bottom) -->
       </div>
     </div>
     </section>
@@ -968,207 +1063,216 @@
 
   <script>
     /**
-     * Architecture Diagram Connector System
-     * 
-     * Grid Layout: Zone1 (3 cols) + Rail1 (1 col) + Zone2 (4 cols) + Rail2 (1 col) + Zone3 (3 cols) = 12 columns
-     * 
-     * Connector Routing:
-     * - Cross-zone connectors route through rails for clean organization
-     * - Arrow targets can be boxes OR explicit ports (DB interfaces)
-     * - Lane values control vertical separation of parallel arrows
+     * Architecture Diagram Connector System (Bezier Edition)
+     * Replaced Manhattan routing with Smooth Bezier curves for a cleaner look.
      */
 
+    // Configuration
+    // anchor: top, bottom, left, right
     const ROUTES = [
-      // Step 1 vertical
-      { from:"box-sources", fromSide:"bottom", to:"box-obj", toSide:"top", style:"solid", marker:"arrow", label:null },
-      { from:"box-obj", fromSide:"bottom", to:"box-ocr", toSide:"top", style:"solid", marker:"arrow", label:null },
+      // Step 1: Horizontal
+      { from:"box-sources", fromAnchor:"right", to:"box-obj", toAnchor:"left", style:"solid", marker:"arrow", label:null },
+      { from:"box-obj", fromAnchor:"right", to:"box-ocr", toAnchor:"left", style:"solid", marker:"arrow", label:null },
 
-      // OCR -> DB ingestion port
-      { from:"box-ocr", fromSide:"right", to:"port-ingest", toSide:"left", via:"rail-12", lane: 0, style:"solid", marker:"arrow", label:"Index: chunks + metadata" },
+      // Step 1 -> Step 2 (Down)
+      { from:"box-ocr", fromAnchor:"bottom", to:"box-db", toAnchor:"top", style:"solid", marker:"arrow", label:"Index" },
 
-      // Agent reads from Vector + Graph (two lanes, clean) - increased separation to avoid overlap
-      { from:"port-vector", fromSide:"right", to:"box-agent", toSide:"left", via:"rail-23", lane: -90, style:"solid", marker:"arrow", label:"Vector retrieve (Top-k)" },
-      { from:"port-graph", fromSide:"right", to:"box-agent", toSide:"left", via:"rail-23", lane: +50, style:"solid", marker:"arrow", label:"Graph context (entities)" },
+      // Step 2 -> Step 3 (Down - Consolidated)
+      { from:"box-db", fromAnchor:"bottom", to:"box-agent", toAnchor:"top", style:"solid", marker:"arrow", label:"Hybrid Retrieval" },
 
-      // UI writes decisions/logs back to SQL port (dashed feedback) - moved further down to avoid overlap
-      { from:"box-ui", fromSide:"left", to:"port-sql", toSide:"right", via:"rail-23", lane: +180, style:"dashed", marker:"arrowLight", label:"Approvals + audit log" },
+      // Step 3: Action Pipeline (Left -> Right)
+      { from:"box-agent", fromAnchor:"right", to:"box-func", toAnchor:"left", style:"solid", marker:"arrow", label:"Redaction Plan" },
+      { from:"box-func", fromAnchor:"right", to:"box-ui", toAnchor:"left", style:"solid", marker:"arrow", label:"PDF Bundle" },
 
-      // Step 3 vertical
-      { from:"box-agent", fromSide:"bottom", to:"box-func", toSide:"top", style:"solid", marker:"arrow", label:"Redaction spans + plan" },
-      { from:"box-func", fromSide:"bottom", to:"box-ui", toSide:"top", style:"solid", marker:"arrow", label:"Redacted PDF bundle" },
+      // Feedback Loop (APEX -> DB) - Right side Loop
+      { from:"box-ui", fromAnchor:"right", to:"box-db", toAnchor:"right", style:"dashed", marker:"arrowLight", label:"Audit Log", curvature: 0.8 },
     ];
 
-    const OUT = 18;
     const LABEL_PAD = 8;
-    const DEBOUNCE_MS = 80;
+    const DEBOUNCE_MS = 50;
 
     const svg = document.getElementById("svg-layer");
     const canvas = document.getElementById("canvas");
 
+    // Helper: Create SVG Element
     function svgEl(tag){ return document.createElementNS("http://www.w3.org/2000/svg", tag); }
 
-    function getRootRect(){
-      return canvas.getBoundingClientRect();
-    }
+    // Helper: Get diagram root offset
+    function getRootRect(){ return canvas.getBoundingClientRect(); }
 
+    // Helper: Get element geometry relative to root
     function rectOf(el, rootRect){
       const r = el.getBoundingClientRect();
-      return { x: r.left-rootRect.left, y: r.top-rootRect.top, w: r.width, h: r.height };
+      return { x: r.left - rootRect.left, y: r.top - rootRect.top, w: r.width, h: r.height };
     }
 
-    function anchor(el, side, rootRect){
+    // Helper: Calculate exact anchor point on element side
+    function getAnchorPoint(el, side, rootRect){
       const r = rectOf(el, rootRect);
       const cx = r.x + r.w/2;
       const cy = r.y + r.h/2;
-
+      
+      // Fine tune to match the visual .anchor-point divs (offset by 0px technically, but visual divs overlap border)
       if(side==="left") return {x:r.x, y:cy};
       if(side==="right") return {x:r.x+r.w, y:cy};
       if(side==="top") return {x:cx, y:r.y};
       if(side==="bottom") return {x:cx, y:r.y+r.h};
-      if(side==="center") return {x:cx, y:cy};
       return {x:cx, y:cy};
     }
 
-    function outStep(p, side){
-      if(side==="left") return {x:p.x-OUT, y:p.y};
-      if(side==="right") return {x:p.x+OUT, y:p.y};
-      if(side==="top") return {x:p.x, y:p.y-OUT};
-      if(side==="bottom") return {x:p.x, y:p.y+OUT};
-      return {x:p.x, y:p.y};
-    }
-
+    // Clear SVG but keep defs (markers)
     function clearSvgPreserveDefs(){
       const defs = svg.querySelector("defs");
       svg.innerHTML = "";
-      svg.appendChild(defs);
+      if(defs) svg.appendChild(defs);
     }
 
-    function pathDirect(fromEl, fromSide, toEl, toSide, rootRect){
-      const p1 = anchor(fromEl, fromSide, rootRect);
-      const p2 = anchor(toEl, toSide, rootRect);
-      const o1 = outStep(p1, fromSide);
-      const o2 = outStep(p2, toSide);
-      const midY = (o1.y + o2.y)/2;
-
-      return {
-        d: `M ${p1.x} ${p1.y}
-            L ${o1.x} ${o1.y}
-            L ${o1.x} ${midY}
-            L ${o2.x} ${midY}
-            L ${o2.x} ${o2.y}
-            L ${p2.x} ${p2.y}`,
-        labelPoint: { x:(p1.x+p2.x)/2, y:(p1.y+p2.y)/2 }
-      };
-    }
-
-    function pathViaRail(fromEl, fromSide, toEl, toSide, railEl, lane, rootRect){
-      const p1 = anchor(fromEl, fromSide, rootRect);
-      const p2 = anchor(toEl, toSide, rootRect);
-      const o1 = outStep(p1, fromSide);
-      const o2 = outStep(p2, toSide);
-
-      const rail = anchor(railEl, "center", rootRect);
-      const railX = rail.x;
-
-      const laneFromY = o1.y + lane;
-      const laneToY   = o2.y + lane;
-
-      return {
-        d: `M ${p1.x} ${p1.y}
-            L ${o1.x} ${o1.y}
-            L ${o1.x} ${laneFromY}
-            L ${railX} ${laneFromY}
-            L ${railX} ${laneToY}
-            L ${o2.x} ${laneToY}
-            L ${o2.x} ${o2.y}
-            L ${p2.x} ${p2.y}`,
-        labelPoint: { x: railX + 20, y: (laneFromY + laneToY)/2 - 15 }
-      };
-    }
-
+    // Draw Label with background
     function addLabel(text, x, y){
       const t = svgEl("text");
       t.setAttribute("x", x);
       t.setAttribute("y", y);
-      t.setAttribute("text-anchor", "start");
-      t.setAttribute("font-family", "Inter, ui-sans-serif, system-ui");
-      t.setAttribute("font-size", "12");
-      t.setAttribute("fill", "#334155");
-      t.setAttribute("font-weight", "700");
+      t.setAttribute("text-anchor", "middle"); 
+      t.setAttribute("font-family", "Inter, system-ui, sans-serif");
+      t.setAttribute("font-size", "11");
+      t.setAttribute("fill", "#475569");
+      t.setAttribute("font-weight", "600");
       t.textContent = text;
-
       svg.appendChild(t);
-      const bb = t.getBBox();
 
+      const bb = t.getBBox();
       const bg = svgEl("rect");
       bg.setAttribute("x", bb.x - LABEL_PAD);
-      bg.setAttribute("y", bb.y - 5);
+      bg.setAttribute("y", bb.y - 4);
       bg.setAttribute("width", bb.width + LABEL_PAD*2);
-      bg.setAttribute("height", bb.height + 10);
-      bg.setAttribute("rx", "10");
-      bg.setAttribute("fill", "rgba(255,255,255,.98)");
-      bg.setAttribute("stroke", "rgba(100,116,139,.8)");
-      bg.setAttribute("stroke-width", "1.5");
+      bg.setAttribute("height", bb.height + 8);
+      bg.setAttribute("rx", "6");
+      bg.setAttribute("fill", "rgba(255,255,255,0.95)");
+      bg.setAttribute("stroke", "#e2e8f0");
+      bg.setAttribute("stroke-width", "1");
       svg.insertBefore(bg, t);
     }
 
+    // Bezier Path Logic
+    function drawBezier(p1, p2, anchor1, anchor2, curvature = 0.5){
+      // Calculate control points based on distance and anchor direction
+      const dx = Math.abs(p2.x - p1.x);
+      const dy = Math.abs(p2.y - p1.y);
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      
+      // Control Point 1
+      let cp1 = {x: p1.x, y: p1.y};
+      let cp2 = {x: p2.x, y: p2.y};
+      
+      // Factor determines how "curvy" it is. Standard is around 0.5 of distance.
+      // If manually overridden curvature is passed, scale it.
+      let curveDist = dist * curvature;
+      
+      // Adjust CP based on direction
+      if(anchor1 === 'right') cp1.x += curveDist;
+      if(anchor1 === 'left')  cp1.x -= curveDist;
+      if(anchor1 === 'top')   cp1.y -= curveDist;
+      if(anchor1 === 'bottom') cp1.y += curveDist;
+
+      if(anchor2 === 'right') cp2.x += curveDist;
+      if(anchor2 === 'left')  cp2.x -= curveDist;
+      if(anchor2 === 'top')   cp2.y -= curveDist;
+      if(anchor2 === 'bottom') cp2.y += curveDist;
+      
+      // Feedback Loop Special Case (Right to Right)
+      if(anchor1 === 'right' && anchor2 === 'right'){
+         const xMax = Math.max(p1.x, p2.x) + 80; // Go out 80px
+         cp1 = { x: xMax, y: p1.y };
+         cp2 = { x: xMax, y: p2.y };
+      }
+
+      // Draw Cubic Bezier
+      const d = `M ${p1.x} ${p1.y} C ${cp1.x} ${cp1.y}, ${cp2.x} ${cp2.y}, ${p2.x} ${p2.y}`;
+      
+      // Calculate Midpoint on Bezier for Label (Approximation)
+      // For simple Cubic Bezier, midpoint is roughly (1-t)^3... etc at t=0.5
+      // Simplified: Just average the 4 points (Start, CP1, CP2, End)
+      // This is not mathematically perfect for t=0.5 but visually centered "enough" for diagrams
+      const midX = 0.125 * p1.x + 0.375 * cp1.x + 0.375 * cp2.x + 0.125 * p2.x;
+      const midY = 0.125 * p1.y + 0.375 * cp1.y + 0.375 * cp2.y + 0.125 * p2.y;
+
+      return { d, lx: midX, ly: midY };
+    }
+
+    // Main Render Function
     function render(){
       const rootRect = getRootRect();
-      svg.setAttribute("width", rootRect.width);
-      svg.setAttribute("height", rootRect.height);
-      svg.setAttribute("viewBox", `0 0 ${rootRect.width} ${rootRect.height}`);
+      const padding = 60; // Padding to ensure labels are visible
+      
+      // Set SVG dimensions with padding to accommodate labels outside boundaries
+      svg.setAttribute("width", rootRect.width + padding * 2);
+      svg.setAttribute("height", rootRect.height + padding * 2);
+      // Adjust viewBox to include padding, shifting coordinate system
+      svg.setAttribute("viewBox", `-${padding} -${padding} ${rootRect.width + padding * 2} ${rootRect.height + padding * 2}`);
+      
+      // Adjust SVG positioning to account for padding offset
+      svg.style.width = `${rootRect.width + padding * 2}px`;
+      svg.style.height = `${rootRect.height + padding * 2}px`;
+      svg.style.left = `-${padding}px`;
+      svg.style.top = `-${padding}px`;
 
       clearSvgPreserveDefs();
 
-      for(const r of ROUTES){
+      ROUTES.forEach(r => {
         const fromEl = document.getElementById(r.from);
-        const toEl   = document.getElementById(r.to);
-        if(!fromEl || !toEl) continue;
+        const toEl = document.getElementById(r.to);
+        if(!fromEl || !toEl) return;
 
-        let result;
-        if(r.via){
-          const railEl = document.getElementById(r.via);
-          if(!railEl) continue;
-          result = pathViaRail(fromEl, r.fromSide, toEl, r.toSide, railEl, r.lane || 0, rootRect);
-        }else{
-          result = pathDirect(fromEl, r.fromSide, toEl, r.toSide, rootRect);
+        const p1 = getAnchorPoint(fromEl, r.fromAnchor, rootRect);
+        const p2 = getAnchorPoint(toEl, r.toAnchor, rootRect);
+
+        const res = drawBezier(p1, p2, r.fromAnchor, r.toAnchor, r.curvature);
+
+        if(res){
+          const path = svgEl("path");
+          path.setAttribute("d", res.d);
+          path.setAttribute("fill", "none");
+          path.setAttribute("stroke", r.style === "dashed" ? "#94a3b8" : "#64748b");
+          path.setAttribute("stroke-width", "2");
+          path.setAttribute("stroke-linecap", "round");
+          path.setAttribute("stroke-linejoin", "round");
+          if(r.style === "dashed") path.setAttribute("stroke-dasharray", "6 4");
+          path.setAttribute("marker-end", `url(#${r.marker})`);
+          svg.appendChild(path);
+
+          if(r.label){
+            addLabel(r.label, res.lx, res.ly);
+          }
         }
-
-        const path = svgEl("path");
-        path.setAttribute("d", result.d);
-        path.setAttribute("fill", "none");
-        path.setAttribute("stroke", r.style === "dashed" ? "var(--lineLight)" : "var(--line)");
-        path.setAttribute("stroke-width", "2");
-        path.setAttribute("stroke-linecap", "round");
-        path.setAttribute("stroke-linejoin", "round");
-        if(r.style === "dashed") path.setAttribute("stroke-dasharray", "7 7");
-        path.setAttribute("marker-end", `url(#${r.marker || "arrow"})`);
-        path.style.filter = "drop-shadow(0px 1px 0px rgba(255,255,255,.95))";
-        svg.appendChild(path);
-
-        if(r.label) addLabel(r.label, result.labelPoint.x, result.labelPoint.y);
-      }
+      });
     }
 
-    let timer = null;
-    function scheduleRender(){
-      clearTimeout(timer);
-      timer = setTimeout(() => requestAnimationFrame(render), DEBOUNCE_MS);
-    }
-
+    // Initialize & Event Listeners
     window.addEventListener("load", () => {
-      requestAnimationFrame(() => requestAnimationFrame(render));
-      // Set last updated date
-      const lastUpdated = document.getElementById("last-updated");
-      if(lastUpdated) {
-        lastUpdated.textContent = new Date().toLocaleDateString('en-US', { 
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric' 
+      // Set date
+      const dateEl = document.getElementById("last-updated");
+      if(dateEl) {
+        dateEl.textContent = new Date().toLocaleDateString('en-US', { 
+          year: 'numeric', month: 'long', day: 'numeric' 
         });
       }
+
+      requestAnimationFrame(render);
+
+      const observer = new ResizeObserver(() => {
+        requestAnimationFrame(render);
+      });
+      
+      const root = document.getElementById("diagram-root");
+      if(root) observer.observe(root);
     });
-    window.addEventListener("resize", scheduleRender);
+
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => requestAnimationFrame(render), DEBOUNCE_MS);
+    });
   </script>
 </body>
 </html>
+
