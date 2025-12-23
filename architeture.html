@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="OCI Agentic FOIA Architecture powered by Oracle Database 26ai - An intelligent, end-to-end solution for automated FOIA request processing with AI-driven document understanding, intelligent retrieval, and automated redaction." />
+  <meta name="keywords" content="FOIA, Oracle Cloud, Database 26ai, AI Agents, Document Understanding, Architecture" />
+  <meta name="author" content="Oracle Cloud Infrastructure" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="OCI Agentic FOIA Architecture - Oracle Database 26ai" />
+  <meta property="og:description" content="Intelligent FOIA request processing solution leveraging Oracle Database 26ai's converged architecture for automated document processing, intelligent retrieval, and compliance workflows." />
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="OCI Agentic FOIA Architecture" />
+  <meta name="twitter:description" content="AI-powered FOIA processing with Oracle Database 26ai" />
+  
+  <title>OCI Agentic FOIA Architecture (26ai Edition - Professional)</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "oracle-red": "#c74634",
+            "oracle-dark": "#312d2a",
+            "oci-teal": "#00758f",
+            "oci-green": "#027a48",
+            "slate-line": "#64748b",
+          },
+          fontFamily: {
+            sans: ["Inter", "system-ui", "sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+    :root{
+      --line: #64748b;        /* slate-500 */
+      --lineLight: #94a3b8;   /* slate-400 */
+      --paper: #ffffff;
+      --bg: #f8fafc;
+    }
+
+    body{
+      background: var(--bg);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .canvas-container{
+      width: 1400px;
+      max-width: 100%;
+      margin: 0 auto;
+      background: white;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      position: relative;
+      overflow-x: auto;
+    }
+
+    .zone{
+      background-color: #f8fafc;
+      border: 1px dashed #e2e8f0;
+      border-radius: 12px;
+      position: relative;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .zone-label{
+      position: absolute;
+      top: -12px;
+      left: 24px;
+      background: white;
+      padding: 4px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+      z-index: 30;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .node{
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      position: relative;
+      z-index: 25;
+      transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .node:hover{
+      border-color: #475569;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    
+
+    .rail{
+      position: relative;
+      z-index: 5;
+      border-radius: 12px;
+      background: transparent;
+      min-width: 0;
+    }
+
+    #svg-layer{
+      position:absolute;
+      inset:0;
+      width: 100%;
+      height: 100%;
+      pointer-events:none;
+      z-index: 60;
+      overflow: visible;
+    }
+
+    /* DB port styling */
+    .port-strip{
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid #e2e8f0;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .port{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 14px 16px;
+      position: relative;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .port:hover{
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+    .port .lhs{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .port .tag{
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #64748b;
+    }
+    .port .name{
+      font-size: 12px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 320px;
+    }
+    .port .hint{
+      font-size: 10px;
+      color: #64748b;
+      line-height: 1.2;
+    }
+
+    /* This tiny circle is what arrows "land on" */
+    .port-pin{
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      border: 2px solid #94a3b8;
+      background: #ffffff;
+      flex: 0 0 auto;
+    }
+
+    @media print{
+      body{ background:white; margin:0; }
+      .canvas-container{ box-shadow:none; margin:0; width:100%; }
+    }
+  </style>
+</head>
+
+<body class="bg-slate-50">
+  <div class="max-w-[1200px] mx-auto bg-white min-h-screen shadow-sm">
+    <div class="p-8 md:p-12" id="diagram-root">
+
+    <!-- HEADER -->
+    <header class="border-b border-slate-200 pb-6 mb-10">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 bg-oracle-red rounded-lg flex items-center justify-center text-white text-xl">
+          <i class="fa-solid fa-layer-group"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold text-slate-900 tracking-tight">OCI Agentic FOIA Architecture</h1>
+          <p class="text-slate-600 text-sm mt-1">Oracle Database 26ai Converged Architecture</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- INTRODUCTION SECTION -->
+    <section class="mb-16">
+      <h2 class="text-xl font-semibold text-slate-900 mb-4">Overview</h2>
+      <div class="prose prose-slate max-w-none">
+        <p class="text-slate-700 leading-relaxed mb-4">
+          The <strong>OCI Agentic FOIA Architecture</strong> is an intelligent, end-to-end solution designed to automate and streamline Freedom of Information Act (FOIA) request processing. Built on Oracle Cloud Infrastructure's latest AI capabilities, this system leverages Oracle Database 26ai's converged architecture to provide unprecedented efficiency in document ingestion, intelligent retrieval, automated redaction, and compliance workflows.
+        </p>
+        <p class="text-slate-700 leading-relaxed mb-6">
+          <strong>How It Works:</strong> The system continuously collects unstructured data from fragmented sources (emails, repositories, file shares) at scheduled intervals, processes and indexes it proactively in Oracle Database 26ai. When a user submits a query, the system searches through this pre-indexed data using hybrid retrieval (vector + graph + keyword search), eliminating the need to process documents at query time.
+        </p>
+        </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+          <h3 class="font-semibold text-slate-800 mb-2 text-sm">Business Value</h3>
+          <ul class="text-sm text-slate-600 space-y-1">
+            <li>• 90% reduction in manual processing time</li>
+            <li>• Automated compliance with FOIA regulations</li>
+            <li>• Cost-effective serverless architecture</li>
+            <li>• Scalable to handle high-volume requests</li>
+          </ul>
+      </div>
+
+        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+          <h3 class="font-semibold text-slate-800 mb-2 text-sm">Key Benefits</h3>
+          <ul class="text-sm text-slate-600 space-y-1">
+            <li>• Intelligent search via hybrid retrieval</li>
+            <li>• Automated redaction of sensitive information</li>
+            <li>• Complete audit trail for compliance</li>
+            <li>• Human-in-the-loop review for accuracy</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIAGRAM LEGEND -->
+    <div class="mb-6 pb-4 border-b border-slate-200">
+      <details class="cursor-pointer">
+        <summary class="text-sm font-medium text-slate-600 hover:text-slate-900">Diagram Legend</summary>
+        <div class="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm pl-4">
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 border border-slate-300 rounded flex items-center justify-center flex-shrink-0">
+              <i class="fa-solid fa-arrow-right text-slate-400 text-xs"></i>
+            </div>
+            <div>
+              <span class="text-slate-700 font-medium">Solid Arrow:</span>
+              <span class="text-slate-600 text-xs ml-1">Data flow</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 border border-slate-300 rounded flex items-center justify-center flex-shrink-0 border-dashed">
+              <i class="fa-solid fa-arrow-left text-slate-400 text-xs"></i>
+            </div>
+            <div>
+              <span class="text-slate-700 font-medium">Dashed Arrow:</span>
+              <span class="text-slate-600 text-xs ml-1">Feedback</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 bg-slate-100 border border-slate-300 rounded flex-shrink-0"></div>
+            <div>
+              <span class="text-slate-700 font-medium">Box:</span>
+              <span class="text-slate-600 text-xs ml-1">Component</span>
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- MAIN DIAGRAM AREA -->
+    <section class="mb-16">
+      <h2 class="text-xl font-semibold text-slate-900 mb-6">Architecture Diagram</h2>
+      <div class="relative min-h-[1300px] bg-white rounded-lg border border-slate-200 p-6" id="canvas">
+      <svg id="svg-layer" aria-hidden="true">
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L0,6 L9,3 z" fill="var(--line)"></path>
+          </marker>
+          <marker id="arrowLight" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L0,6 L9,3 z" fill="var(--lineLight)"></path>
+          </marker>
+        </defs>
+      </svg>
+
+      <div class="grid grid-cols-12 gap-10 h-full items-stretch">
+
+        <!-- ZONE 1 -->
+        <div class="col-span-3 flex flex-col h-full">
+          <div class="zone px-8 py-12 flex flex-col min-h-[1250px]">
+            <div class="zone-label">Step 1: Continuous Data Ingestion Pipeline</div>
+
+            <div class="flex-1 flex flex-col justify-center gap-14">
+              <div id="box-sources" class="node p-6 border-l-4 border-slate-400 shadow-sm">
+                <div class="flex justify-between items-start mb-3">
+                  <span class="text-xs font-bold text-slate-400 uppercase">Input</span>
+                  <i class="fa-solid fa-file-import text-slate-400"></i>
+                </div>
+                <h3 class="font-bold text-slate-800 text-lg">Unstructured Data Sources</h3>
+                <p class="text-xs text-slate-500 mt-2">Emails (PST), Repositories, PDFs, Images<br><span class="text-[10px] italic">Collected continuously/scheduled</span></p>
+              </div>
+
+              <div id="box-obj" class="node p-6 border-l-4 border-oracle-red shadow-sm">
+                <div class="flex justify-between items-start mb-3">
+                  <span class="text-xs font-bold text-oracle-red uppercase">Storage</span>
+                  <i class="fa-solid fa-bucket text-oracle-red"></i>
+                </div>
+                <h3 class="font-bold text-slate-800 text-lg">Object Storage</h3>
+                <p class="text-xs text-slate-500 mt-2">Raw Bucket (Immutable)</p>
+              </div>
+
+              <div id="box-ocr" class="node p-6 border-l-4 border-oci-teal bg-cyan-50/50 shadow-sm">
+                <div class="flex justify-between items-start mb-3">
+                  <span class="text-xs font-bold text-oci-teal uppercase">AI Service</span>
+                  <i class="fa-solid fa-eye text-oci-teal"></i>
+                </div>
+                <h3 class="font-bold text-slate-800 text-lg">Doc Understanding</h3>
+                <p class="text-xs text-slate-500 mt-2">OCR & Key-Value Extraction</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RAIL 1 -->
+        <div id="rail-12" class="rail col-span-1"></div>
+
+        <!-- ZONE 2 -->
+        <div class="col-span-4 flex flex-col justify-center">
+          <div class="zone p-10 flex flex-col justify-center bg-orange-50/20 border-orange-200 min-h-[1250px]">
+            <div class="zone-label text-oracle-red border-orange-200">Step 2: Unified Memory</div>
+
+            <div id="box-db" class="node w-full p-10 shadow-xl border-2 border-oracle-red bg-white relative my-12">
+              <div class="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-oracle-red text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-md z-10">
+                Oracle Database 26ai
+              </div>
+
+              <div class="text-center mb-8 mt-4">
+                <i class="fa-solid fa-database text-5xl text-oracle-red mb-4"></i>
+                <h2 class="text-2xl font-extrabold text-slate-900">Converged Store</h2>
+                <p class="text-xs text-slate-500 uppercase tracking-widest font-semibold mt-2">The Single Source of Truth</p>
+              </div>
+
+              <div class="grid grid-cols-2 gap-5 mb-6">
+                <div class="bg-slate-50 p-4 rounded border border-slate-200 text-center">
+                  <i class="fa-solid fa-vector-square text-oci-teal mb-2 block text-lg"></i>
+                  <span class="text-xs font-bold text-slate-700">AI Vector Search</span>
+                  <div class="text-[9px] text-slate-500 leading-tight mt-1.5">Semantic Chunks</div>
+                </div>
+                <div class="bg-slate-50 p-4 rounded border border-slate-200 text-center">
+                  <i class="fa-solid fa-share-nodes text-orange-500 mb-2 block text-lg"></i>
+                  <span class="text-xs font-bold text-slate-700">Property Graph</span>
+                  <div class="text-[9px] text-slate-500 leading-tight mt-1.5">Relationships</div>
+                </div>
+                <div class="bg-slate-50 p-4 rounded border border-slate-200 text-center">
+                  <i class="fa-solid fa-table text-blue-500 mb-2 block text-lg"></i>
+                  <span class="text-xs font-bold text-slate-700">Relational</span>
+                  <div class="text-[9px] text-slate-500 leading-tight mt-1.5">SQL Metadata</div>
+                </div>
+                <div class="bg-slate-50 p-4 rounded border border-slate-200 text-center">
+                  <i class="fa-solid fa-file-code text-purple-500 mb-2 block text-lg"></i>
+                  <span class="text-xs font-bold text-slate-700">JSON Duality</span>
+                  <div class="text-[9px] text-slate-500 leading-tight mt-1.5">Doc Access</div>
+                </div>
+              </div>
+
+              <!-- EXPLICIT PORTS (WHERE ARROWS LAND) -->
+              <div class="port-strip">
+                <div class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-3">DB Interfaces</div>
+
+                <div class="port" id="port-ingest">
+                  <div class="lhs">
+                    <i class="fa-solid fa-arrow-right-to-bracket text-slate-600"></i>
+                    <div>
+                      <div class="tag">Ingestion</div>
+                      <div class="name">Upsert Chunks + Metadata</div>
+                      <div class="hint">from Doc Understanding</div>
+                    </div>
+                  </div>
+                  <div class="port-pin" title="connector target"></div>
+                </div>
+
+                <div class="port" id="port-vector">
+                  <div class="lhs">
+                    <i class="fa-solid fa-cubes text-oci-teal"></i>
+                    <div>
+                      <div class="tag">Vector</div>
+                      <div class="name">Semantic Retrieve (Top-k)</div>
+                      <div class="hint">embeddings + similarity</div>
+                    </div>
+                  </div>
+                  <div class="port-pin" title="connector target"></div>
+                </div>
+
+                <div class="port" id="port-graph">
+                  <div class="lhs">
+                    <i class="fa-solid fa-project-diagram text-orange-500"></i>
+                    <div>
+                      <div class="tag">Graph</div>
+                      <div class="name">GraphRAG Context</div>
+                      <div class="hint">entities + relations</div>
+                    </div>
+                  </div>
+                  <div class="port-pin" title="connector target"></div>
+                </div>
+
+                <div class="port" id="port-sql">
+                  <div class="lhs">
+                    <i class="fa-solid fa-database text-blue-600"></i>
+                    <div>
+                      <div class="tag">SQL</div>
+                      <div class="name">Case Records + Audit</div>
+                      <div class="hint">decisions, logs, SLAs</div>
+                    </div>
+                  </div>
+                  <div class="port-pin" title="connector target"></div>
+                </div>
+              </div>
+              <!-- /PORTS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- RAIL 2 -->
+        <div id="rail-23" class="rail col-span-1 min-w-[60px]"></div>
+
+        <!-- ZONE 3 -->
+        <div class="col-span-3 flex flex-col h-full">
+          <div class="zone px-8 py-12 flex flex-col min-h-[1250px]">
+            <div class="zone-label text-oci-teal border-cyan-200">Step 3: Reasoning & Action</div>
+
+            <div class="flex-1 flex flex-col justify-center gap-14">
+              <div id="box-agent" class="node p-6 border-l-4 border-oci-teal bg-cyan-50/50 shadow-sm">
+                <div class="flex justify-between items-start mb-3">
+                <span class="text-xs font-bold text-oci-teal uppercase">Orchestration</span>
+                <i class="fa-solid fa-brain text-oci-teal"></i>
+              </div>
+              <h3 class="font-bold text-slate-800 text-lg">GenAI Agent</h3>
+                <p class="text-xs text-slate-500 mt-2">Plan → Retrieve → Redact → Package</p>
+            </div>
+
+              <div id="box-func" class="node p-6 border-l-4 border-slate-600 shadow-sm">
+                <div class="flex justify-between items-start mb-3">
+                <span class="text-xs font-bold text-slate-600 uppercase">Execution</span>
+                <i class="fa-solid fa-cogs text-slate-600"></i>
+              </div>
+              <h3 class="font-bold text-slate-800 text-lg">OCI Functions</h3>
+                <p class="text-xs text-slate-500 mt-2">Redaction & PDF Generation</p>
+            </div>
+
+              <div id="box-ui" class="node p-6 border-l-4 border-oci-green bg-green-50/50 shadow-sm">
+                <div class="flex justify-between items-start mb-3">
+                <span class="text-xs font-bold text-oci-green uppercase">Interface</span>
+                <i class="fa-solid fa-desktop text-oci-green"></i>
+              </div>
+              <h3 class="font-bold text-slate-800 text-lg">Oracle APEX</h3>
+                <p class="text-xs text-slate-500 mt-2">Human Review & Release</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grid layout: Zone1 (3) + Rail1 (1) + Zone2 (4) + Rail2 (1) + Zone3 (3) = 12 columns -->
+      </div>
+    </div>
+    </section>
+
+    <!-- EXAMPLE WORKFLOW SECTION -->
+    <section class="mb-16">
+      <h2 class="text-xl font-semibold text-slate-900 mb-4">Example Workflow</h2>
+
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-slate-800 mb-3">Phase 1: Continuous Data Collection & Indexing</h3>
+        <p class="text-sm text-slate-600 mb-4">Runs continuously or at scheduled intervals, collecting and indexing data from multiple sources before any user query arrives.</p>
+      </div>
+
+      <div class="space-y-3">
+        <!-- Phase 1 - Step 1 -->
+        <details class="group bg-white border border-slate-200 rounded-lg">
+          <summary class="cursor-pointer p-4 flex items-center gap-3 hover:bg-slate-50">
+            <div class="flex-shrink-0 w-8 h-8 bg-oracle-red text-white rounded-full flex items-center justify-center font-semibold text-sm">1</div>
+            <h5 class="font-semibold text-slate-800 flex-1">
+              Collect Unstructured Data from Multiple Sources
+            </h5>
+            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="px-4 pb-4 pl-14">
+            <p class="text-sm text-slate-600 mb-2"><strong>OCI Data Integration</strong> and connectors pull data from fragmented sources:</p>
+            <ul class="text-sm text-slate-600 space-y-1 mb-2 ml-4">
+              <li>• <strong>Email Systems:</strong> PST files from Outlook, Exchange servers</li>
+              <li>• <strong>Repositories:</strong> SharePoint, file shares, document management systems</li>
+              <li>• <strong>Fragmented Sources:</strong> Legacy systems, cloud storage, local drives</li>
+            </ul>
+            <div class="bg-slate-50 p-3 rounded text-xs font-mono text-slate-700">
+              <strong>Example Sources:</strong><br>
+              • Email: city_council_emails_jan2024.pst (2.1 GB)<br>
+              • Repository: \\fileserver\council\minutes\2024\january\<br>
+              • SharePoint: /sites/citycouncil/Shared Documents/2024/<br>
+              <strong>Collection Schedule:</strong> Daily at 2:00 AM UTC
+            </div>
+            <p class="text-xs text-slate-500 mt-2"><i class="fa-solid fa-clock mr-1"></i> <strong>Time:</strong> Continuous/Scheduled</p>
+          </div>
+        </details>
+
+        <!-- Phase 1 - Step 2 -->
+        <details class="group bg-white border border-slate-200 rounded-lg">
+          <summary class="cursor-pointer p-4 flex items-center gap-3 hover:bg-slate-50">
+            <div class="flex-shrink-0 w-8 h-8 bg-oci-teal text-white rounded-full flex items-center justify-center font-semibold text-sm">2</div>
+            <h5 class="font-semibold text-slate-800 flex-1">
+              Store Raw Data in Object Storage
+            </h5>
+            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="px-4 pb-4 pl-14">
+            <p class="text-sm text-slate-600 mb-2">All collected unstructured data is stored in <strong>OCI Object Storage</strong> immutable buckets:</p>
+            <div class="bg-slate-50 p-3 rounded text-xs font-mono text-slate-700">
+              <strong>Bucket:</strong> foia-raw-documents<br>
+              <strong>Objects:</strong><br>
+              &nbsp;&nbsp;• emails/2024/01/city_council_emails_jan2024.pst<br>
+              &nbsp;&nbsp;• repositories/2024/01/council_minutes_jan2024.pdf<br>
+              &nbsp;&nbsp;• sharepoint/2024/01/budget_discussions.pdf<br>
+              <strong>Total Size:</strong> 15.7 GB (collected this cycle)<br>
+              <strong>Timestamp:</strong> 2024-01-15T02:00:00Z
+            </div>
+            <p class="text-xs text-slate-500 mt-2"><i class="fa-solid fa-clock mr-1"></i> <strong>Time:</strong> ~5 minutes (for batch)</p>
+          </div>
+        </details>
+
+        <!-- Phase 1 - Step 3 -->
+        <details class="group bg-white border border-slate-200 rounded-lg">
+          <summary class="cursor-pointer p-4 flex items-center gap-3 hover:bg-slate-50">
+            <div class="flex-shrink-0 w-8 h-8 bg-oci-teal text-white rounded-full flex items-center justify-center font-semibold text-sm">3</div>
+            <h5 class="font-semibold text-slate-800 flex-1">
+              Document Understanding Processing
+            </h5>
+            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="px-4 pb-4 pl-14">
+            <p class="text-sm text-slate-600 mb-2"><strong>OCI Document Understanding</strong> processes all collected documents:</p>
+            <ul class="text-sm text-slate-600 space-y-1 mb-2 ml-4">
+              <li>• OCR extracts text from scanned pages and images</li>
+              <li>• Parses PST files and extracts email content</li>
+              <li>• Identifies structured sections (agenda items, motions, votes)</li>
+              <li>• Extracts key-value pairs (dates, attendees, topics, senders)</li>
+              <li>• Detects handwritten annotations and signatures</li>
+            </ul>
+            <div class="bg-slate-50 p-3 rounded text-xs font-mono text-slate-700">
+              <strong>Processing Output:</strong><br>
+              • 1,247 text chunks from all documents<br>
+              • 342 structured sections identified<br>
+              • 156 key-value pairs extracted<br>
+              • 89 emails parsed from PST files<br>
+              <strong>Confidence:</strong> 94.2% average OCR accuracy
+            </div>
+            <p class="text-xs text-slate-500 mt-2"><i class="fa-solid fa-clock mr-1"></i> <strong>Time:</strong> ~25 minutes (batch processing)</p>
+          </div>
+        </details>
+
+        <!-- Phase 1 - Step 4 -->
+        <details class="group bg-white border border-slate-200 rounded-lg">
+          <summary class="cursor-pointer p-4 flex items-center gap-3 hover:bg-slate-50">
+            <div class="flex-shrink-0 w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-semibold text-sm">4</div>
+            <h5 class="font-semibold text-slate-800 flex-1">
+              Indexing in Oracle Database 26ai Converged Store
+            </h5>
+            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="px-4 pb-4 pl-14">
+            <p class="text-sm text-slate-600 mb-2">All processed content is indexed in <strong>Converged Store</strong> for future queries:</p>
+            <div class="grid grid-cols-2 gap-3 mb-2">
+              <div class="bg-cyan-50 p-2 rounded text-xs">
+                <strong class="text-oci-teal">Vector Search:</strong> 1,247 semantic embeddings created
+              </div>
+              <div class="bg-orange-50 p-2 rounded text-xs">
+                <strong class="text-orange-600">Property Graph:</strong> 523 entities & 891 relationships extracted
+              </div>
+              <div class="bg-blue-50 p-2 rounded text-xs">
+                <strong class="text-blue-600">SQL Metadata:</strong> 342 document records created
+              </div>
+              <div class="bg-purple-50 p-2 rounded text-xs">
+                <strong class="text-purple-600">JSON Duality:</strong> Full document JSON stored
+              </div>
+            </div>
+            <div class="bg-green-50 p-2 rounded text-xs mt-2">
+              <strong class="text-green-700">Keyword Index:</strong> Full-text search index created for exact matches
+            </div>
+            <p class="text-xs text-slate-500 mt-2"><i class="fa-solid fa-clock mr-1"></i> <strong>Time:</strong> ~12 minutes (batch indexing)</p>
+            <p class="text-xs text-slate-600 mt-2 italic">✓ Data is now ready for queries. Indexing complete at 2024-01-15T02:42:00Z</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="mt-8 mb-6 bg-blue-50 border-l-4 border-blue-500 rounded-lg p-5">
+        <h3 class="font-semibold text-slate-900 mb-3">Example User Query</h3>
+        <p class="text-sm text-slate-700 mb-2">
+          <strong>System Context:</strong> Unstructured data is continuously collected from emails, repositories, and fragmented sources, indexed proactively, and stored in Oracle Database 26ai.
+        </p>
+        <p class="text-sm text-slate-700 mb-2">
+          <strong>User Query:</strong> "Please provide all City Council meeting minutes from January 2024 that discuss budget allocations and personnel decisions."
+        </p>
+        <p class="text-xs text-slate-600 mt-2 italic">
+          Note: The system searches through pre-indexed data. No document upload is required with the query. This query triggers Phase 2 processing.
+        </p>
+      </div>
+
+      <div class="mt-8 mb-6">
+        <h3 class="text-lg font-semibold text-slate-800 mb-3">Phase 2: User Query Processing</h3>
+        <p class="text-sm text-slate-600 mb-4">This phase begins when a user submits a query. The system searches through the pre-indexed data.</p>
+      </div>
+
+      <div class="space-y-3">
+        <!-- Phase 2 - Step 5 -->
+        <details class="group bg-white border border-slate-200 rounded-lg">
+          <summary class="cursor-pointer p-4 flex items-center gap-3 hover:bg-slate-50">
+            <div class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold text-sm">5</div>
+            <h5 class="font-semibold text-slate-800 flex-1">
+              User Submits Query
+            </h5>
+            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="px-4 pb-4 pl-14">
+            <p class="text-sm text-slate-600 mb-2">A user submits a FOIA request query through the interface:</p>
+            <div class="bg-slate-50 p-3 rounded text-xs font-mono text-slate-700">
+              <strong>User Query:</strong> "Please provide all City Council meeting minutes from January 2024 that discuss budget allocations and personnel decisions."
+            </div>
+            <p class="text-sm text-slate-600 mt-2"><strong>Note:</strong> No document upload required. The system searches through pre-indexed data.</p>
+            <p class="text-xs text-slate-500 mt-2"><i class="fa-solid fa-clock mr-1"></i> <strong>Time:</strong> Immediate</p>
+          </div>
+        </details>
+
+        <!-- Phase 2 - Step 6 -->
+        <details class="group bg-white border border-slate-200 rounded-lg">
+          <summary class="cursor-pointer p-4 flex items-center gap-3 hover:bg-slate-50">
+            <div class="flex-shrink-0 w-8 h-8 bg-oci-teal text-white rounded-full flex items-center justify-center font-semibold text-sm">6</div>
+            <h5 class="font-semibold text-slate-800 flex-1">
+              GenAI Agent Structures & Processes Query
+            </h5>
+            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="px-4 pb-4 pl-14">
+            <p class="text-sm text-slate-600 mb-2">The <strong>GenAI Agent</strong> receives the natural language query and structures it for multi-modal search:</p>
+            <div class="bg-slate-50 p-3 rounded text-xs font-mono text-slate-700 mb-2">
+              <strong>Original Query:</strong> "Please provide all City Council meeting minutes from January 2024 that discuss budget allocations and personnel decisions."
+            </div>
+            <p class="text-sm text-slate-600 mb-2"><strong>Agent Processing:</strong></p>
+            <ul class="text-sm text-slate-600 space-y-1 ml-4 mb-2">
+              <li>• Extracts key concepts: "City Council", "January 2024", "budget allocations", "personnel decisions"</li>
+              <li>• Identifies date filter: January 2024</li>
+              <li>• Creates search strategy combining vector, graph, and keyword search</li>
+              <li>• Plans hybrid retrieval approach</li>
+            </ul>
+            <p class="text-xs text-slate-500"><i class="fa-solid fa-clock mr-1"></i> <strong>Time:</strong> ~2 seconds</p>
+          </div>
+        </details>
+
+        <!-- Phase 2 - Step 7 -->
+        <details class="group bg-white border border-slate-200 rounded-lg">
+          <summary class="cursor-pointer p-4 flex items-center gap-3 hover:bg-slate-50">
+            <div class="flex-shrink-0 w-8 h-8 bg-oci-teal text-white rounded-full flex items-center justify-center font-semibold text-sm">7</div>
+            <h5 class="font-semibold text-slate-800 flex-1">
+              Hybrid Retrieval (Vector + Graph + Keyword)
+            </h5>
+            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="px-4 pb-4 pl-14">
+            <p class="text-sm text-slate-600 mb-2">The agent performs <strong>hybrid retrieval</strong> combining three search methods:</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-2">
+              <div class="bg-cyan-50 p-3 rounded text-xs">
+                <strong class="text-oci-teal">Vector Search:</strong><br>
+                Semantic similarity search:<br>
+                • "Budget allocation discussion..." (0.92)<br>
+                • "Personnel hiring decision..." (0.89)<br>
+                • "Salary adjustments..." (0.85)<br>
+                <strong>Results:</strong> 47 relevant chunks
+              </div>
+              <div class="bg-orange-50 p-3 rounded text-xs">
+                <strong class="text-orange-600">Graph Traversal:</strong><br>
+                Relationship-based search:<br>
+                • City Council → Budget Committee<br>
+                • Personnel → HR Department<br>
+                • Meeting → Agenda Items<br>
+                <strong>Results:</strong> 23 related entities
+              </div>
+              <div class="bg-green-50 p-3 rounded text-xs">
+                <strong class="text-green-700">Keyword Search:</strong><br>
+                Exact term matching:<br>
+                • "budget allocations" (156 matches)<br>
+                • "personnel decisions" (89 matches)<br>
+                • "January 2024" (342 matches)<br>
+                <strong>Results:</strong> 12 exact matches
+              </div>
+            </div>
+            <div class="bg-purple-50 p-3 rounded text-xs mt-2">
+              <strong class="text-purple-700">Combined Results:</strong> Agent merges and ranks results from all three methods, identifying 8 most relevant documents spanning emails, PDFs, and meeting minutes.
+            </div>
+            <p class="text-xs text-slate-500 mt-2"><i class="fa-solid fa-clock mr-1"></i> <strong>Time:</strong> ~3 seconds</p>
+          </div>
+        </details>
+
+        <!-- Phase 2 - Step 8 -->
+        <details class="group bg-white border border-slate-200 rounded-lg">
+          <summary class="cursor-pointer p-4 flex items-center gap-3 hover:bg-slate-50">
+            <div class="flex-shrink-0 w-8 h-8 bg-slate-600 text-white rounded-full flex items-center justify-center font-semibold text-sm">8</div>
+            <h5 class="font-semibold text-slate-800 flex-1">
+              Redaction Plan Generation & Execution
+            </h5>
+            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="px-4 pb-4 pl-14">
+            <p class="text-sm text-slate-600 mb-2">The agent generates a redaction plan and <strong>OCI Functions</strong> execute it:</p>
+            <div class="bg-slate-50 p-3 rounded text-xs font-mono text-slate-700 mb-2">
+              <strong>Redaction Spans Identified:</strong><br>
+              • Social Security Numbers: 3 instances<br>
+              • Home addresses: 2 instances<br>
+              • Personal phone numbers: 1 instance<br>
+              • Salary figures: 5 instances<br>
+              • Employee names (in personnel context): 8 instances<br>
+              • Email addresses: 12 instances
+            </div>
+            <p class="text-sm text-slate-600 mb-2">Functions retrieve original documents from Object Storage, apply redaction masks, and generate redacted PDF bundle.</p>
+            <p class="text-xs text-slate-500"><i class="fa-solid fa-clock mr-1"></i> <strong>Time:</strong> ~15 seconds</p>
+          </div>
+        </details>
+
+        <!-- Phase 2 - Step 9 -->
+        <details class="group bg-white border border-slate-200 rounded-lg">
+          <summary class="cursor-pointer p-4 flex items-center gap-3 hover:bg-slate-50">
+            <div class="flex-shrink-0 w-8 h-8 bg-oci-green text-white rounded-full flex items-center justify-center font-semibold text-sm">9</div>
+            <h5 class="font-semibold text-slate-800 flex-1">
+              Human Review & Approval
+            </h5>
+            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="px-4 pb-4 pl-14">
+            <p class="text-sm text-slate-600 mb-2">The redacted PDF bundle is presented in <strong>Oracle APEX</strong> for review:</p>
+            <ul class="text-sm text-slate-600 space-y-1 mb-2 ml-4">
+              <li>• Case worker reviews redaction accuracy</li>
+              <li>• Verifies all PII is properly masked</li>
+              <li>• Checks that requested information is included</li>
+              <li>• Approves or requests adjustments</li>
+            </ul>
+            <div class="bg-green-50 p-3 rounded text-xs text-slate-700">
+              <strong>Status:</strong> Approved<br>
+              <strong>Reviewer:</strong> Jane Doe (Case Worker ID: CW-2024-001)<br>
+              <strong>Timestamp:</strong> 2024-01-15T14:32:45Z
+            </div>
+            <p class="text-xs text-slate-500 mt-2"><i class="fa-solid fa-clock mr-1"></i> <strong>Time:</strong> ~5 minutes (human review)</p>
+          </div>
+        </details>
+
+        <!-- Phase 2 - Step 10 -->
+        <details class="group bg-white border border-slate-200 rounded-lg">
+          <summary class="cursor-pointer p-4 flex items-center gap-3 hover:bg-slate-50">
+            <div class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold text-sm">10</div>
+            <h5 class="font-semibold text-slate-800 flex-1">
+              Audit Log & Release
+            </h5>
+            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="px-4 pb-4 pl-14">
+            <p class="text-sm text-slate-600 mb-2">Approval triggers final steps:</p>
+            <ul class="text-sm text-slate-600 space-y-1 mb-2 ml-4">
+              <li>• Audit log entry created in SQL database</li>
+              <li>• Redacted PDF bundle released to requester</li>
+              <li>• Case status updated to "Completed"</li>
+              <li>• SLA metrics recorded</li>
+            </ul>
+            <div class="bg-blue-50 p-3 rounded text-xs text-slate-700">
+              <strong>Query Processing Time:</strong> ~20 seconds (automated) + 5 minutes (review)<br>
+              <strong>SLA Compliance:</strong> ✓ Within 24-hour target<br>
+              <strong>Case ID:</strong> FOIA-2024-001234<br>
+              <strong>Documents Found:</strong> 8 documents from pre-indexed data
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <div class="mt-6 bg-slate-50 p-4 rounded-lg border border-slate-200">
+        <h4 class="font-semibold text-slate-800 mb-3 text-sm">Performance Summary</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div>
+            <h5 class="font-medium text-slate-700 mb-1 text-xs">Phase 1: Data Collection & Indexing</h5>
+            <ul class="text-slate-600 space-y-0.5 text-xs">
+              <li>• Runs continuously/scheduled (daily at 2 AM)</li>
+              <li>• Processing time: ~42 minutes per batch</li>
+              <li>• Data ready for queries immediately after indexing</li>
+            </ul>
+          </div>
+          <div>
+            <h5 class="font-medium text-slate-700 mb-1 text-xs">Phase 2: Query Processing</h5>
+            <ul class="text-slate-600 space-y-0.5 text-xs">
+              <li>• Query processing: ~20 seconds (automated)</li>
+              <li>• Human review: ~5 minutes</li>
+              <li>• Total: ~5.3 minutes (vs. 2-3 hours manual)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TECH STACK TABLE -->
+    <section class="mb-16">
+      <h2 class="text-xl font-semibold text-slate-900 mb-4">Component Breakdown</h2>
+
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-slate-50 border-b border-slate-200">
+            <th class="p-4 text-xs font-extrabold text-slate-500 uppercase w-1/6">Component</th>
+            <th class="p-4 text-xs font-extrabold text-slate-500 uppercase w-1/5">OCI Service</th>
+            <th class="p-4 text-xs font-extrabold text-slate-500 uppercase w-2/5">Role & Justification</th>
+            <th class="p-4 text-xs font-extrabold text-slate-500 uppercase w-1/6">Documentation</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm text-slate-700">
+          <tr class="border-b border-slate-100 hover:bg-slate-50">
+            <td class="p-4 font-bold">Converged DB</td>
+            <td class="p-4 text-oracle-red font-bold">Oracle Database 26ai</td>
+            <td class="p-4 text-slate-600">Unified engine combining Vector Search, Property Graph, Relational SQL, and JSON Duality for hybrid retrieval and comprehensive governance.</td>
+            <td class="p-4">
+              <a href="https://docs.oracle.com/en/database/oracle/oracle-database/26/" target="_blank" rel="noopener noreferrer" class="text-oci-teal hover:text-oci-teal/80 hover:underline flex items-center gap-1">
+                <i class="fa-solid fa-external-link-alt text-xs"></i>
+                <span class="text-xs">Docs</span>
+              </a>
+            </td>
+          </tr>
+          <tr class="border-b border-slate-100 hover:bg-slate-50">
+            <td class="p-4 font-bold">Orchestrator</td>
+            <td class="p-4 text-oci-teal font-bold">OCI Generative AI Agents</td>
+            <td class="p-4 text-slate-600">Intelligent agent that plans multi-step workflows, retrieves context via vector and graph queries, generates redaction spans, and orchestrates document packaging.</td>
+            <td class="p-4">
+              <a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/home.htm" target="_blank" rel="noopener noreferrer" class="text-oci-teal hover:text-oci-teal/80 hover:underline flex items-center gap-1">
+                <i class="fa-solid fa-external-link-alt text-xs"></i>
+                <span class="text-xs">Docs</span>
+              </a>
+            </td>
+          </tr>
+          <tr class="border-b border-slate-100 hover:bg-slate-50">
+            <td class="p-4 font-bold">Data Ingestion</td>
+            <td class="p-4 font-bold">OCI Data Integration</td>
+            <td class="p-4 text-slate-600">Connects to email systems (PST files), repositories (SharePoint, file shares), and fragmented data sources. Runs continuously or at scheduled intervals to collect unstructured data.</td>
+            <td class="p-4">
+              <a href="https://www.oracle.com/integration/data-integration/" target="_blank" rel="noopener noreferrer" class="text-oci-teal hover:text-oci-teal/80 hover:underline flex items-center gap-1">
+                <i class="fa-solid fa-external-link-alt text-xs"></i>
+                <span class="text-xs">Docs</span>
+              </a>
+            </td>
+          </tr>
+          <tr class="border-b border-slate-100 hover:bg-slate-50">
+            <td class="p-4 font-bold">Document Processing</td>
+            <td class="p-4 font-bold">OCI Document Understanding</td>
+            <td class="p-4 text-slate-600">AI service that performs OCR, extracts key-value pairs, and structures unstructured content (PDFs, PSTs, images) for semantic indexing.</td>
+            <td class="p-4">
+              <a href="https://www.oracle.com/artificial-intelligence/document-understanding/" target="_blank" rel="noopener noreferrer" class="text-oci-teal hover:text-oci-teal/80 hover:underline flex items-center gap-1">
+                <i class="fa-solid fa-external-link-alt text-xs"></i>
+                <span class="text-xs">Docs</span>
+              </a>
+            </td>
+          </tr>
+          <tr class="border-b border-slate-100 hover:bg-slate-50">
+            <td class="p-4 font-bold">Storage</td>
+            <td class="p-4 text-oracle-red font-bold">OCI Object Storage</td>
+            <td class="p-4 text-slate-600">Immutable raw bucket for storing original documents before processing, ensuring data integrity and auditability.</td>
+            <td class="p-4">
+              <a href="https://docs.oracle.com/en-us/iaas/Content/Object/Concepts/objectstorageoverview.htm" target="_blank" rel="noopener noreferrer" class="text-oci-teal hover:text-oci-teal/80 hover:underline flex items-center gap-1">
+                <i class="fa-solid fa-external-link-alt text-xs"></i>
+                <span class="text-xs">Docs</span>
+              </a>
+            </td>
+          </tr>
+          <tr class="border-b border-slate-100 hover:bg-slate-50">
+            <td class="p-4 font-bold">Execution</td>
+            <td class="p-4 font-bold">OCI Functions</td>
+            <td class="p-4 text-slate-600">Serverless functions that execute redaction operations and generate PDF bundles based on agent-generated plans.</td>
+            <td class="p-4">
+              <a href="https://docs.oracle.com/en-us/iaas/Content/Functions/Concepts/functionsoverview.htm" target="_blank" rel="noopener noreferrer" class="text-oci-teal hover:text-oci-teal/80 hover:underline flex items-center gap-1">
+                <i class="fa-solid fa-external-link-alt text-xs"></i>
+                <span class="text-xs">Docs</span>
+              </a>
+            </td>
+          </tr>
+          <tr class="hover:bg-slate-50">
+            <td class="p-4 font-bold">User Interface</td>
+            <td class="p-4 text-oci-green font-bold">Oracle APEX</td>
+            <td class="p-4 text-slate-600">Low-code application platform for case worker review, approval workflows, and auditable release processes within secure network boundaries.</td>
+            <td class="p-4">
+              <a href="https://apex.oracle.com/en/learn/getting-started/" target="_blank" rel="noopener noreferrer" class="text-oci-teal hover:text-oci-teal/80 hover:underline flex items-center gap-1">
+                <i class="fa-solid fa-external-link-alt text-xs"></i>
+                <span class="text-xs">Docs</span>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- CONCLUSION SECTION -->
+    <section class="mb-16">
+      <h2 class="text-xl font-semibold text-slate-900 mb-4">Architecture Summary</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-50 p-5 rounded-lg border border-slate-200">
+          <h4 class="font-semibold text-slate-800 mb-2 text-sm">Architecture Highlights</h4>
+          <ul class="text-sm text-slate-700 space-y-1.5">
+            <li>• Converged Database: Single source of truth combining vector, graph, SQL, and JSON</li>
+            <li>• Hybrid Retrieval: Combines vector search, graph traversal, and keyword search</li>
+            <li>• Intelligent Automation: AI agents orchestrate complex multi-step workflows</li>
+            <li>• Human-in-the-Loop: Critical review steps ensure accuracy and compliance</li>
+            <li>• Complete Auditability: Every action logged for compliance and transparency</li>
+          </ul>
+    </div>
+
+        <div class="bg-slate-50 p-5 rounded-lg border border-slate-200">
+          <h4 class="font-semibold text-slate-800 mb-2 text-sm">Scalability & Performance</h4>
+          <ul class="text-sm text-slate-700 space-y-1.5">
+            <li>• Serverless Architecture: Auto-scales based on demand</li>
+            <li>• High Throughput: Process hundreds of documents concurrently</li>
+            <li>• Cost-Effective: Pay only for resources used</li>
+            <li>• Low Latency: Sub-minute automated processing</li>
+            <li>• Elastic Storage: Unlimited document storage capacity</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-50 p-5 rounded-lg border border-slate-200">
+          <h4 class="font-semibold text-slate-800 mb-2 text-sm">Security & Compliance</h4>
+          <ul class="text-sm text-slate-700 space-y-1.5">
+            <li>• Data Encryption: At-rest and in-transit encryption</li>
+            <li>• Access Controls: Role-based access control (RBAC)</li>
+            <li>• Immutable Storage: Original documents preserved for audit</li>
+            <li>• Compliance Ready: FOIA, GDPR, HIPAA compliant workflows</li>
+            <li>• Audit Trails: Complete logging of all operations</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-50 p-5 rounded-lg border border-slate-200">
+          <h4 class="font-semibold text-slate-800 mb-2 text-sm">Future Enhancements</h4>
+          <ul class="text-sm text-slate-700 space-y-1.5">
+            <li>• Multi-language Support: Process documents in multiple languages</li>
+            <li>• Advanced Analytics: Request pattern analysis and predictions</li>
+            <li>• Integration APIs: Connect with external case management systems</li>
+            <li>• Mobile App: Review and approve requests on-the-go</li>
+            <li>• AI Model Fine-tuning: Custom models for domain-specific content</li>
+          </ul>
+      </div>
+    </section>
+
+    </div>
+  </div>
+
+
+  </div>
+
+  <script>
+    /**
+     * Architecture Diagram Connector System
+     * 
+     * Grid Layout: Zone1 (3 cols) + Rail1 (1 col) + Zone2 (4 cols) + Rail2 (1 col) + Zone3 (3 cols) = 12 columns
+     * 
+     * Connector Routing:
+     * - Cross-zone connectors route through rails for clean organization
+     * - Arrow targets can be boxes OR explicit ports (DB interfaces)
+     * - Lane values control vertical separation of parallel arrows
+     */
+
+    const ROUTES = [
+      // Step 1 vertical
+      { from:"box-sources", fromSide:"bottom", to:"box-obj", toSide:"top", style:"solid", marker:"arrow", label:null },
+      { from:"box-obj", fromSide:"bottom", to:"box-ocr", toSide:"top", style:"solid", marker:"arrow", label:null },
+
+      // OCR -> DB ingestion port
+      { from:"box-ocr", fromSide:"right", to:"port-ingest", toSide:"left", via:"rail-12", lane: 0, style:"solid", marker:"arrow", label:"Index: chunks + metadata" },
+
+      // Agent reads from Vector + Graph (two lanes, clean) - increased separation to avoid overlap
+      { from:"port-vector", fromSide:"right", to:"box-agent", toSide:"left", via:"rail-23", lane: -90, style:"solid", marker:"arrow", label:"Vector retrieve (Top-k)" },
+      { from:"port-graph", fromSide:"right", to:"box-agent", toSide:"left", via:"rail-23", lane: +50, style:"solid", marker:"arrow", label:"Graph context (entities)" },
+
+      // UI writes decisions/logs back to SQL port (dashed feedback) - moved further down to avoid overlap
+      { from:"box-ui", fromSide:"left", to:"port-sql", toSide:"right", via:"rail-23", lane: +180, style:"dashed", marker:"arrowLight", label:"Approvals + audit log" },
+
+      // Step 3 vertical
+      { from:"box-agent", fromSide:"bottom", to:"box-func", toSide:"top", style:"solid", marker:"arrow", label:"Redaction spans + plan" },
+      { from:"box-func", fromSide:"bottom", to:"box-ui", toSide:"top", style:"solid", marker:"arrow", label:"Redacted PDF bundle" },
+    ];
+
+    const OUT = 18;
+    const LABEL_PAD = 8;
+    const DEBOUNCE_MS = 80;
+
+    const svg = document.getElementById("svg-layer");
+    const canvas = document.getElementById("canvas");
+
+    function svgEl(tag){ return document.createElementNS("http://www.w3.org/2000/svg", tag); }
+
+    function getRootRect(){
+      return canvas.getBoundingClientRect();
+    }
+
+    function rectOf(el, rootRect){
+      const r = el.getBoundingClientRect();
+      return { x: r.left-rootRect.left, y: r.top-rootRect.top, w: r.width, h: r.height };
+    }
+
+    function anchor(el, side, rootRect){
+      const r = rectOf(el, rootRect);
+      const cx = r.x + r.w/2;
+      const cy = r.y + r.h/2;
+
+      if(side==="left") return {x:r.x, y:cy};
+      if(side==="right") return {x:r.x+r.w, y:cy};
+      if(side==="top") return {x:cx, y:r.y};
+      if(side==="bottom") return {x:cx, y:r.y+r.h};
+      if(side==="center") return {x:cx, y:cy};
+      return {x:cx, y:cy};
+    }
+
+    function outStep(p, side){
+      if(side==="left") return {x:p.x-OUT, y:p.y};
+      if(side==="right") return {x:p.x+OUT, y:p.y};
+      if(side==="top") return {x:p.x, y:p.y-OUT};
+      if(side==="bottom") return {x:p.x, y:p.y+OUT};
+      return {x:p.x, y:p.y};
+    }
+
+    function clearSvgPreserveDefs(){
+      const defs = svg.querySelector("defs");
+      svg.innerHTML = "";
+      svg.appendChild(defs);
+    }
+
+    function pathDirect(fromEl, fromSide, toEl, toSide, rootRect){
+      const p1 = anchor(fromEl, fromSide, rootRect);
+      const p2 = anchor(toEl, toSide, rootRect);
+      const o1 = outStep(p1, fromSide);
+      const o2 = outStep(p2, toSide);
+      const midY = (o1.y + o2.y)/2;
+
+      return {
+        d: `M ${p1.x} ${p1.y}
+            L ${o1.x} ${o1.y}
+            L ${o1.x} ${midY}
+            L ${o2.x} ${midY}
+            L ${o2.x} ${o2.y}
+            L ${p2.x} ${p2.y}`,
+        labelPoint: { x:(p1.x+p2.x)/2, y:(p1.y+p2.y)/2 }
+      };
+    }
+
+    function pathViaRail(fromEl, fromSide, toEl, toSide, railEl, lane, rootRect){
+      const p1 = anchor(fromEl, fromSide, rootRect);
+      const p2 = anchor(toEl, toSide, rootRect);
+      const o1 = outStep(p1, fromSide);
+      const o2 = outStep(p2, toSide);
+
+      const rail = anchor(railEl, "center", rootRect);
+      const railX = rail.x;
+
+      const laneFromY = o1.y + lane;
+      const laneToY   = o2.y + lane;
+
+      return {
+        d: `M ${p1.x} ${p1.y}
+            L ${o1.x} ${o1.y}
+            L ${o1.x} ${laneFromY}
+            L ${railX} ${laneFromY}
+            L ${railX} ${laneToY}
+            L ${o2.x} ${laneToY}
+            L ${o2.x} ${o2.y}
+            L ${p2.x} ${p2.y}`,
+        labelPoint: { x: railX + 20, y: (laneFromY + laneToY)/2 - 15 }
+      };
+    }
+
+    function addLabel(text, x, y){
+      const t = svgEl("text");
+      t.setAttribute("x", x);
+      t.setAttribute("y", y);
+      t.setAttribute("text-anchor", "start");
+      t.setAttribute("font-family", "Inter, ui-sans-serif, system-ui");
+      t.setAttribute("font-size", "12");
+      t.setAttribute("fill", "#334155");
+      t.setAttribute("font-weight", "700");
+      t.textContent = text;
+
+      svg.appendChild(t);
+      const bb = t.getBBox();
+
+      const bg = svgEl("rect");
+      bg.setAttribute("x", bb.x - LABEL_PAD);
+      bg.setAttribute("y", bb.y - 5);
+      bg.setAttribute("width", bb.width + LABEL_PAD*2);
+      bg.setAttribute("height", bb.height + 10);
+      bg.setAttribute("rx", "10");
+      bg.setAttribute("fill", "rgba(255,255,255,.98)");
+      bg.setAttribute("stroke", "rgba(100,116,139,.8)");
+      bg.setAttribute("stroke-width", "1.5");
+      svg.insertBefore(bg, t);
+    }
+
+    function render(){
+      const rootRect = getRootRect();
+      svg.setAttribute("width", rootRect.width);
+      svg.setAttribute("height", rootRect.height);
+      svg.setAttribute("viewBox", `0 0 ${rootRect.width} ${rootRect.height}`);
+
+      clearSvgPreserveDefs();
+
+      for(const r of ROUTES){
+        const fromEl = document.getElementById(r.from);
+        const toEl   = document.getElementById(r.to);
+        if(!fromEl || !toEl) continue;
+
+        let result;
+        if(r.via){
+          const railEl = document.getElementById(r.via);
+          if(!railEl) continue;
+          result = pathViaRail(fromEl, r.fromSide, toEl, r.toSide, railEl, r.lane || 0, rootRect);
+        }else{
+          result = pathDirect(fromEl, r.fromSide, toEl, r.toSide, rootRect);
+        }
+
+        const path = svgEl("path");
+        path.setAttribute("d", result.d);
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke", r.style === "dashed" ? "var(--lineLight)" : "var(--line)");
+        path.setAttribute("stroke-width", "2");
+        path.setAttribute("stroke-linecap", "round");
+        path.setAttribute("stroke-linejoin", "round");
+        if(r.style === "dashed") path.setAttribute("stroke-dasharray", "7 7");
+        path.setAttribute("marker-end", `url(#${r.marker || "arrow"})`);
+        path.style.filter = "drop-shadow(0px 1px 0px rgba(255,255,255,.95))";
+        svg.appendChild(path);
+
+        if(r.label) addLabel(r.label, result.labelPoint.x, result.labelPoint.y);
+      }
+    }
+
+    let timer = null;
+    function scheduleRender(){
+      clearTimeout(timer);
+      timer = setTimeout(() => requestAnimationFrame(render), DEBOUNCE_MS);
+    }
+
+    window.addEventListener("load", () => {
+      requestAnimationFrame(() => requestAnimationFrame(render));
+      // Set last updated date
+      const lastUpdated = document.getElementById("last-updated");
+      if(lastUpdated) {
+        lastUpdated.textContent = new Date().toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+      }
+    });
+    window.addEventListener("resize", scheduleRender);
+  </script>
+</body>
+</html>
